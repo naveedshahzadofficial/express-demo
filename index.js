@@ -4,6 +4,9 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const debug = require("debug")("app:startup");
 const mongoose = require("mongoose");
+const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
+
 const logger = require("./middleware/logger");
 const home = require("./routes/home");
 const courses = require("./routes/courses");

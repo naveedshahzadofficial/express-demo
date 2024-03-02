@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const router = express.Router();
-const { Course, validate } = require("../models/course");
+const { Course, validate, validateObjectId } = require("../models/course");
 
 router.get("/", async (req, res) => {
   const courses = await Course.find();
@@ -10,10 +10,9 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { error } = validate(req.body);
-  if (error) {
-    return res.status(400).send(error.details[0].message);
-  }
-  let course = new Course({
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const course = new Course({
     name: req.body.name,
     author: req.body.author,
     tags: req.body.tags,
@@ -21,7 +20,7 @@ router.post("/", async (req, res) => {
     price: req.body.price,
   });
   try {
-    course = await course.save();
+    await course.save();
     res.send(course);
   } catch (ex) {
     return res.status(501).send(ex.message);
@@ -29,8 +28,9 @@ router.post("/", async (req, res) => {
 });
 
 router.get("/:id", async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id))
-    return res.status(404).send(`Course id is invalid:  ${req.params.id}`);
+  const { error } = validateObjectId(req.params.id);
+  if (error) return res.status(400).send(error.details[0].message);
+
   const course = await Course.findById(req.params.id);
   if (!course)
     return res.status(404).send(`Course not found for id ${req.params.id}`);
@@ -38,8 +38,9 @@ router.get("/:id", async (req, res) => {
 });
 
 router.put("/:id", async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id))
-    return res.status(404).send(`Course id is invalid:  ${req.params.id}`);
+  const { error: error1 } = validateObjectId(req.params.id);
+  if (error1) return res.status(400).send(error.details[0].message);
+
   const { error } = validate(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
@@ -61,8 +62,8 @@ router.put("/:id", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  if (!mongoose.Types.ObjectId.isValid(req.params.id))
-    return res.status(404).send(`Course id is invalid:  ${req.params.id}`);
+  const { error } = validateObjectId(req.params.id);
+  if (error) return res.status(400).send(error.details[0].message);
 
   const course = await Course.findByIdAndDelete(req.params.id);
   if (!course)

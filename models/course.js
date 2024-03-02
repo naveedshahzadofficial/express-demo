@@ -29,5 +29,13 @@ function validateCourse(course) {
   return schema.validate(course);
 }
 
+function validateObjectId(objectId) {
+  const schema = Joi.object({
+    id: Joi.objectId().required(),
+  });
+  return schema.validate({ id: objectId });
+}
+
 exports.Course = Course;
 exports.validate = validateCourse;
+exports.validateObjectId = validateObjectId;

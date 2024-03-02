@@ -1,24 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const Joi = require("joi");
 const router = express.Router();
-
-const Course = mongoose.model(
-  "Course",
-  new mongoose.Schema({
-    name: { type: String, required: true, minLength: 3, maxLength: 255 },
-    author: String,
-    tags: [String],
-    date: { type: Date, default: Date.now },
-    isPublished: Boolean,
-    price: {
-      type: Number,
-      required: function () {
-        return this.isPublished;
-      },
-    },
-  })
-);
+const { Course, validate } = require("../models/course");
 
 router.get("/", async (req, res) => {
   const courses = await Course.find();
@@ -26,7 +9,7 @@ router.get("/", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-  const { error } = validateCourse(req.body);
+  const { error } = validate(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
@@ -57,7 +40,7 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
   if (!mongoose.Types.ObjectId.isValid(req.params.id))
     return res.status(404).send(`Course id is invalid:  ${req.params.id}`);
-  const { error } = validateCourse(req.body);
+  const { error } = validate(req.body);
   if (error) {
     return res.status(400).send(error.details[0].message);
   }
@@ -86,16 +69,5 @@ router.delete("/:id", async (req, res) => {
     return res.status(404).send(`Course not found for id ${req.params.id}`);
   res.send(course);
 });
-
-function validateCourse(course) {
-  const schema = Joi.object({
-    name: Joi.string().min(3).max(255).required(),
-    author: Joi.string(),
-    tags: Joi.array(),
-    isPublished: Joi.boolean(),
-    price: Joi.number(),
-  });
-  return schema.validate(course);
-}
 
 module.exports = router;

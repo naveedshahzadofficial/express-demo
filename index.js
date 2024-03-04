@@ -39,22 +39,6 @@ mongoose
   .then(() => debug("Connected to MongoDB..."))
   .catch((err) => debug("Error connecting to MongoDB...", err));
 
-async function createCourse() {
-  const course = new Course({
-    name: "Angular Course",
-    author: "Naveed",
-    tags: ["angular", "typescript"],
-    isPublished: true,
-  });
-  try {
-    const result = await course.save();
-    console.log(result);
-  } catch (ex) {
-    console.log(ex.message);
-  }
-}
-//createCourse();
-
 async function getCourses() {
   const pageNumber = 2;
   const pageSize = 10;

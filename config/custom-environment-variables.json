@@ -1,4 +1,5 @@
 {
+  "jwtPrivateKey": "APP_JWT_PUBLIC_KEY",
   "mail": {
     "password": "APP_PASSWORD"
   }

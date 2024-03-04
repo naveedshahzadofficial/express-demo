@@ -10,6 +10,7 @@ Joi.objectId = require("joi-objectid")(Joi);
 const logger = require("./middleware/logger");
 const home = require("./routes/home");
 const courses = require("./routes/courses");
+const auth = require("./routes/auth");
 const { bool } = require("joi");
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,6 +22,7 @@ app.use(helmet());
 app.use(logger);
 app.use("/", home);
 app.use("/api/courses", courses);
+app.use("/api/auth", auth);
 
 // Configuration
 console.log("Application Name: " + config.get("name"));
